@@ -26,5 +26,19 @@
         "Longitud": -75.59913,
         "Temperatura": 23.0,
         "Clima": "Tormenta eléctrica ⛈️"
+    },
+    {
+        "Ciudad": "Santiago de Cali",
+        "Latitud": 3.43722,
+        "Longitud": -76.5225,
+        "Temperatura": 15.3,
+        "Clima": "Nublado ☁️"
+    },
+    {
+        "Ciudad": "Medellín",
+        "Latitud": 6.25184,
+        "Longitud": -75.56359,
+        "Temperatura": 22.5,
+        "Clima": "Nublado ☁️"
     }
 ]
