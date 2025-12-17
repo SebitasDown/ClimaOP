@@ -1,6 +1,30 @@
-import requests;
+import requests
 import os
 import json
+from conexion_db import conexion
+
+# Funcion para guardar en la base de datos
+def guardar_ciudad (nombre, lat, lon, temp, clima):
+    with conexion() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO ciudades (nombre, latitud, longitud, temperatura, clima)
+            VALUES (?, ?, ?, ?, ?)
+        """, (nombre, lat, lon, temp, clima))
+
+def mostrar_ranking():
+    with conexion() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT nombre, temperatura, clima
+            FROM ciudades
+            ORDER BY temperatura DESC
+        """)
+        filas = cursor.fetchall()
+
+    print("\n🌡️ Ranking de temperaturas:")
+    for i, (nombre, temp, clima) in enumerate( filas, start=1):
+        print(f"{i}. {nombre: <12} | {temp:>5}°C | {clima}")
 
 # Se lee informacion de JSON
 if os.path.exists("ciudades.json"):
@@ -39,6 +63,8 @@ def obtener_coordenadas(ciudad):
             return None, None, None
     except requests.exceptions.RequestException as e:
         print(f"Error en la conexion: {e}")        
+
+
 
 def obtener_clima(lat, lon):
     clima_url = "https://api.open-meteo.com/v1/forecast"
@@ -92,6 +118,8 @@ while True:
         # Reorganizar el constructor
         for c in ciudades:
             print(c)
+            # Llama a la funcion para guardar en la base de datos
+        guardar_ciudad(nombre, lat, lon, temperatura, descripcion)
 
         # Se guarda la informacion en JSON
         with open("ciudades.json", "w", encoding="utf-8") as archivo:
@@ -112,3 +140,5 @@ ranking = sorted (ciudades, key=lambda c: c["Temperatura"], reverse= True)
 for i, c in enumerate(ranking, start=1):
     # print(f"{i}. {c['Ciudad']}: {c['Temperatura']}°C - {c['Clima']}")
     print(f"{i}. {c['Ciudad']:<12} | {c['Temperatura']:>5}°C | {c['Clima']}")
+
+mostrar_ranking()
