@@ -10,6 +10,8 @@ def lista():
     print("Lista de ciudades")
     for nombre, temp, clima in filas:
         print(f"{nombre: <12} | {temp :> 5}°C | {clima}")
+    
+    return filas
 
 def ciudad_existe(nombre):
     with conexion() as conn:
@@ -62,3 +64,5 @@ def mostrar_ranking():
     print("\n🌡️ Ranking de temperaturas:")
     for i, (nombre, temp, clima) in enumerate( filas, start=1):
         print(f"{i}. {nombre: <12} | {temp:>5}°C | {clima}")
+    
+    return filas
