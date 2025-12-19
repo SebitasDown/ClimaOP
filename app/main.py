@@ -1,14 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
+from schemas import Ciudad
 from db import (
-    guardar_o_actualizar,
-    eliminar_ciudad,
-    mostrar_ranking,
-    lista
+ getAllCiudad,
+ postCiudad,
+ putCiudad,
+ deleteCiudad,
+ mostrar_ranking
 )
-from config import CODIGOS
 
 app = FastAPI(title= "API Clima")
 
+# endpoints de prueba 
 @app.get("/")
 def home():
     return{"mensaje" : "API de Clima funcionando"}
@@ -21,3 +23,49 @@ def ranking():
         {"ciudad": n, "temperatura": t, "clima": c}
         for n, t, c in filas
     ]
+
+# Obtener todas las ciudades
+@app.get("/ciudades")
+def ciudades():
+    filas = getAllCiudad()
+    return[
+        {"ciudad":n, "temperatura": t, "clima": c}
+        for n, t, c in filas
+    ]
+
+# Crear ciudad
+@app.post("/ciudades", status_code=status.HTTP_201_CREATED)
+def crear_ciudad(ciudad:Ciudad):
+    estado = postCiudad(
+        ciudad.nombre,
+        ciudad.latitud,
+        ciudad.longitud,
+        ciudad.temperatura,
+        ciudad.clima
+    )
+    return {"mensaje": f"Ciudad {estado}"}
+
+
+# Actualizar ciudad
+@app.put("/ciudades/{nombre}")
+def actualizar_ciudad(nombre: str, ciudad:Ciudad):
+    estado = putCiudad(
+        nombre,
+        ciudad.latitud,
+        ciudad.longitud,
+        ciudad.temperatura,
+        ciudad.clima
+    )
+    return {"mensaje" : f"Ciudad {estado}"}
+
+
+#Eliminar ciudad
+@app.delete("/ciudad/{nombre}")
+def borrar_ciudad(nombre:str):
+   filas  = deleteCiudad(nombre)
+   if filas == 0:
+       raise HTTPException(
+           status_code = 404,
+           detail = "Ciudad no encontrada"
+       )
+   return {"mensaje": "Ciudad eliminada"}
