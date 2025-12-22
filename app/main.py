@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from schemas import Ciudad
+from cors import configure_cors
 from db import (
  getAllCiudad,
  postCiudad,
@@ -9,6 +10,7 @@ from db import (
 )
 
 app = FastAPI(title= "API Clima")
+configure_cors(app)
 
 # endpoints de prueba 
 @app.get("/")
@@ -60,7 +62,7 @@ def actualizar_ciudad(nombre: str, ciudad:Ciudad):
 
 
 #Eliminar ciudad
-@app.delete("/ciudad/{nombre}")
+@app.delete("/ciudades/{nombre}")
 def borrar_ciudad(nombre:str):
    filas  = deleteCiudad(nombre)
    if filas == 0:
