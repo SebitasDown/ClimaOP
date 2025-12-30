@@ -8,12 +8,11 @@ from db import (
  deleteCiudad,
  mostrar_ranking
 )
-from cors import setup_cors
+from services import get_coordinates, get_current_weather
 
 app = FastAPI(title= "API Clima")
 configure_cors(app)
 
-setup_cors(app)
 
 # endpoints de prueba 
 @app.get("/")
@@ -40,7 +39,23 @@ def ciudades():
 
 # Crear ciudad
 @app.post("/ciudades", status_code=status.HTTP_201_CREATED)
-def crear_ciudad(ciudad:Ciudad):
+def crear_ciudad(ciudad: Ciudad):
+    if ciudad.latitud is None or ciudad.longitud is None:
+        lat, lon = get_coordinates(ciudad.nombre)
+        if lat is None:
+            raise HTTPException(status_code=404, detail=f"No se encontraron coordenadas para {ciudad.nombre}")
+        ciudad.latitud = lat
+        ciudad.longitud = lon
+    
+    if ciudad.temperatura is None or ciudad.clima is None:
+        temp, weather_desc = get_current_weather(ciudad.latitud, ciudad.longitud)
+        if temp is not None:
+            ciudad.temperatura = temp
+            ciudad.clima = weather_desc
+        else:
+            if ciudad.temperatura is None: ciudad.temperatura = 0.0
+            if ciudad.clima is None: ciudad.clima = "Desconocido"
+
     estado = postCiudad(
         ciudad.nombre,
         ciudad.latitud,
@@ -48,7 +63,7 @@ def crear_ciudad(ciudad:Ciudad):
         ciudad.temperatura,
         ciudad.clima
     )
-    return {"mensaje": f"Ciudad {estado}"}
+    return {"mensaje": f"Ciudad {estado}", "datos": ciudad.dict()}
 
 
 # Actualizar ciudad

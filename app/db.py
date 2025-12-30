@@ -20,7 +20,6 @@ def ciudad_existe(nombre):
 
         return cursor.fetchone() is not None
 
-# Funcion para guardar en la base de datos o actualizar
 def guardar_o_actualizar (nombre, lat, lon, temp, clima):
     with conexion() as conn:
         cursor = conn.cursor()
@@ -69,9 +68,6 @@ def mostrar_ranking():
     
     return filas
 
-# Refactorización de base de datos
-
-# Obtenerlos a todos
 def getAllCiudad():
     with conexion() as conn:
         cursor = conn.cursor()
@@ -85,7 +81,6 @@ def getAllCiudad():
     return filas
 
 
-# Agregar 
 def postCiudad(nombre, lat, lon, temp, clima):
     with conexion() as conn:
         cursor = conn.cursor()
@@ -97,7 +92,6 @@ def postCiudad(nombre, lat, lon, temp, clima):
         print(f"{nombre} guardada")
         return "creada"
      
-# Actualizar
 def putCiudad(nombre, lat, lon, temp, clima):
     with conexion() as conn:
         cursor = conn.cursor()
@@ -113,7 +107,6 @@ def putCiudad(nombre, lat, lon, temp, clima):
         else:
             return "No existe en la base de datos"
         
-# Eliminar 
 def deleteCiudad(nombre):
     with conexion() as conn:
         cursor = conn.cursor()
