@@ -6,7 +6,8 @@ def configure_cors(app):
         allow_origins=[
             "http://localhost:5173",
             "http://localhost:3000",
-            "https://climaop.onrender.com"
+            "https://climaop.onrender.com",
+            "https://clima-op-frontend.vercel.app"
         ],
         allow_credentials=True,
         allow_methods=["*"],  
