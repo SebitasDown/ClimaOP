@@ -6,7 +6,6 @@ def lista():
         cursor.execute("SELECT nombre, temperatura, clima FROM ciudades")
         filas = cursor.fetchall()
 
-
     print("Lista de ciudades")
     for nombre, temp, clima in filas:
         print(f"{nombre: <12} | {temp :> 5}°C | {clima}")
@@ -16,28 +15,31 @@ def lista():
 def ciudad_existe(nombre):
     with conexion() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM ciudades WHERE nombre = ?", (nombre,))
+        # MySQL usa %s
+        cursor.execute("SELECT id FROM ciudades WHERE nombre = %s", (nombre,))
 
         return cursor.fetchone() is not None
 
-def guardar_o_actualizar (nombre, lat, lon, temp, clima):
+def guardar_o_actualizar(nombre, lat, lon, temp, clima):
     with conexion() as conn:
         cursor = conn.cursor()
 
         if ciudad_existe(nombre):
             cursor.execute(""" 
                 UPDATE ciudades
-                SET latitud = ?, longitud = ?, temperatura = ?, clima = ?
-                WHERE nombre = ?           
+                SET latitud = %s, longitud = %s, temperatura = %s, clima = %s
+                WHERE nombre = %s           
             """, (lat, lon, temp, clima, nombre))
+            conn.commit()
             print (f"{nombre} Actualizada")
             return "actualizada"
 
         else:
             cursor.execute("""
                 INSERT INTO ciudades (nombre, latitud, longitud, temperatura, clima)
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s)
             """, (nombre, lat, lon, temp, clima))
+            conn.commit()
             print(f"{nombre} guardada")
             return "creada"
 
@@ -45,7 +47,8 @@ def guardar_o_actualizar (nombre, lat, lon, temp, clima):
 def eliminar_ciudad(nombre):
     with conexion() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM ciudades WHERE nombre = ?", (nombre,))
+        cursor.execute("DELETE FROM ciudades WHERE nombre = %s", (nombre,))
+        conn.commit()
 
         if cursor.rowcount == 0:
             print("ciudad no encontrada")
@@ -68,6 +71,9 @@ def mostrar_ranking():
     
     return filas
 
+# Refactorización de base de datos
+
+# Obtenerlos a todos
 def getAllCiudad():
     with conexion() as conn:
         cursor = conn.cursor()
@@ -81,17 +87,20 @@ def getAllCiudad():
     return filas
 
 
+# Agregar 
 def postCiudad(nombre, lat, lon, temp, clima):
     with conexion() as conn:
         cursor = conn.cursor()
 
         cursor.execute("""
             INSERT INTO ciudades (nombre, latitud, longitud, temperatura, clima)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s)
         """, (nombre, lat, lon, temp, clima))
+        conn.commit()
         print(f"{nombre} guardada")
         return "creada"
      
+# Actualizar
 def putCiudad(nombre, lat, lon, temp, clima):
     with conexion() as conn:
         cursor = conn.cursor()
@@ -99,18 +108,21 @@ def putCiudad(nombre, lat, lon, temp, clima):
         if ciudad_existe(nombre):
             cursor.execute(""" 
                 UPDATE ciudades
-                SET latitud = ?, longitud = ?, temperatura = ?, clima = ?
-                WHERE nombre = ?           
+                SET latitud = %s, longitud = %s, temperatura = %s, clima = %s
+                WHERE nombre = %s           
             """, (lat, lon, temp, clima, nombre))
+            conn.commit()
             print (f"{nombre} Actualizada")
             return "actualizada"
         else:
             return "No existe en la base de datos"
         
+# Eliminar 
 def deleteCiudad(nombre):
     with conexion() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM ciudades WHERE nombre = ?", (nombre,))
+        cursor.execute("DELETE FROM ciudades WHERE nombre = %s", (nombre,))
+        conn.commit()
 
         if cursor.rowcount == 0:
             print("ciudad no encontrada")
