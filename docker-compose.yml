@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    container_name: api-clima
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mapeamos la base de datos local al contenedor para persistencia
+      - ./clima.db:/code/clima.db
+    restart: always
