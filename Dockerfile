@@ -10,7 +10,6 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # Copiamos el código de la aplicación
 COPY ./app /code/app
-COPY ./clima.db /code/clima.db
 
 # IMPORTANTE: Agregamos /code/app al PYTHONPATH para que los imports funcionen
 ENV PYTHONPATH=/code/app
