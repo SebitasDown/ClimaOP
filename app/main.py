@@ -7,8 +7,11 @@ from db import (
  deleteCiudad,
  mostrar_ranking
 )
+from cors import setup_cors
 
 app = FastAPI(title= "API Clima")
+
+setup_cors(app)
 
 # endpoints de prueba 
 @app.get("/")
